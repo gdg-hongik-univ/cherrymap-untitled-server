@@ -16,7 +16,7 @@ public class AlertMessageController {
         this.alertMessageService = alertMessageService;
     }
 
-    @GetMapping("api/status")
+    @GetMapping("/api/status")
     public ResponseEntity<String> getStatus(@RequestBody RouteRequest routeRequest) {
 
         return ResponseEntity.ok(alertMessageService.getAlertMessage(
