@@ -18,6 +18,7 @@ public class AlertMessageController {
 
     @GetMapping("/status")
     public ResponseEntity<String> getStatus(@RequestBody RouteRequest routeRequest) {
+
         return ResponseEntity.ok(alertMessageService.getAlertMessage(
                 routeRequest.getMode(),
                 routeRequest.getUserLocation(),
@@ -25,5 +26,6 @@ public class AlertMessageController {
                 routeRequest.getEndLocation(),
                 routeRequest.getStationList()
         ));
+
     }
 }
