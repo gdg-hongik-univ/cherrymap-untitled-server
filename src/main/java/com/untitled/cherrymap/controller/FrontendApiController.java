@@ -1,5 +1,7 @@
 package com.untitled.cherrymap.controller;
 
+import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.repository.MemberRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
