@@ -1,4 +1,7 @@
 package com.untitled.cherrymap.service;
+
+import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.repository.MemberRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
