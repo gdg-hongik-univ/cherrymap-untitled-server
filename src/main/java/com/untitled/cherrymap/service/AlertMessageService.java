@@ -16,7 +16,7 @@ public class AlertMessageService {
     }
 
     public String getAlertMessage(String mode, String userLocation, String startLocation, String endLocation, List<String> stationList) {
-        List<String> stationNames = new ArrayList<>(stationList); //
+        List<String> stationNames = new ArrayList<>(stationList);
 
         // 메시지 템플릿 불러오기
         Map<String, String> template = templateService.getTemplate(mode);
@@ -28,7 +28,7 @@ public class AlertMessageService {
         // 현재 위치가 경로 내에 있는지 확인
         int userIndex = stationNames.indexOf(userLocation);
         if (userIndex == -1) {
-            return "현재 위치가 경로에 포함되지 않습니다.";
+            return "경로를 벗어났습니다. 올바른 경로로 돌아가세요!!";
         }
 
         // 메시지 적용
@@ -36,7 +36,7 @@ public class AlertMessageService {
             return template.get("beforeBoarding").replace("{nextStation}", stationNames.get(1));
         }
         else if (userIndex == stationNames.size() - 2) {
-            return template.get("beforeExit");
+            return template.get("beforeExit").replace("{endStation}", endLocation);
         }
         else if (userLocation.equals(endLocation)) {
             return template.get("onExit").replace("{endStation}", endLocation);
