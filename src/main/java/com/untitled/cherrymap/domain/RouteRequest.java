@@ -9,7 +9,7 @@ public class RouteRequest {
     private String endLocation;
     private List<String> stationList; // 역(정류장) 리스트
 
-    // 기본 생성자 (필수)
+    // 기본 생성자
     public RouteRequest() {}
 
     // 모든 필드를 포함하는 생성자
@@ -21,7 +21,6 @@ public class RouteRequest {
         this.stationList = stationList;
     }
 
-    // Getter & Setter
     public String getMode() {
         return mode;
     }
