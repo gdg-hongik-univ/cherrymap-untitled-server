@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-public class FrontendApiController {
+public class MemberController {
 
     private final MemberRepository memberRepository;
 
-    public FrontendApiController(MemberRepository memberRepository) {
+    public MemberController(MemberRepository memberRepository) {
         this.memberRepository = memberRepository;
     }
 
