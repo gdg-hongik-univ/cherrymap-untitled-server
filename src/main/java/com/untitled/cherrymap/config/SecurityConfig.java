@@ -1,6 +1,7 @@
 package com.untitled.cherrymap.config;
 
 import com.untitled.cherrymap.service.KakaoOAuth2MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -8,13 +9,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final KakaoOAuth2MemberService kakaoOAuth2MemberService;
-
-    public SecurityConfig(KakaoOAuth2MemberService kakaoOAuth2MemberService) {
-        this.kakaoOAuth2MemberService = kakaoOAuth2MemberService;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
