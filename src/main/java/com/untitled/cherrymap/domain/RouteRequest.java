@@ -1,18 +1,28 @@
 package com.untitled.cherrymap.domain;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 
+@Schema(description = "경로 요청 데이터")
 public class RouteRequest {
-    private String mode; // "subway" 또는 "bus"
-    private String userLocation;
-    private String startLocation;
-    private String endLocation;
-    private List<String> stationList; // 역(정류장) 리스트
 
-    // 기본 생성자
+    @Schema(description = "대중교통 모드 : subway or bus")
+    private String mode;
+
+    @Schema(description = "사용자의 현재 위치", example = "서울역")
+    private String userLocation;
+
+    @Schema(description = "출발 위치", example = "강남역")
+    private String startLocation;
+
+    @Schema(description = "도착 위치", example = "서울역")
+    private String endLocation;
+
+    @Schema(description = "경유지 리스트 (역 또는 정류장 이름 리스트)", example = "[\"강남역\", \"교대역\", \"서울역\"]")
+    private List<String> stationList;
+
     public RouteRequest() {}
 
-    // 모든 필드를 포함하는 생성자
     public RouteRequest(String mode, String userLocation, String startLocation, String endLocation, List<String> stationList) {
         this.mode = mode;
         this.userLocation = userLocation;
@@ -61,5 +71,3 @@ public class RouteRequest {
         this.stationList = stationList;
     }
 }
-
-
