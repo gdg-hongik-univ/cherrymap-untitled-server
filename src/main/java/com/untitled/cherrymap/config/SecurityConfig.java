@@ -18,24 +18,30 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/login/oauth2/**", "/api/**") // 특정 경로만 제외
+                        .ignoringRequestMatchers(
+                                "/api/login/oauth2/**", "/api/logout")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/login/oauth2/code/kakao", "/error").permitAll() // 인증 불필요 경로
-                        .anyRequest().authenticated() // 나머지 경로는 인증 필요
+                // /api 경로 및 하위 경로 모두 인증 없이 접근 가능
+                .requestMatchers("/", "/**", "/api/login/oauth2/code/kakao", "/api/error").permitAll()
+                .anyRequest().authenticated() // 나머지 경로는 인증 필요
                 )
                 .oauth2Login(oauth2 -> oauth2
+                        .authorizationEndpoint(authEndpoint -> authEndpoint
+                                .baseUri("/api/oauth2/authorization") // 엔드포인트 경로 변경
+                        )
                         .userInfoEndpoint(userInfo -> userInfo
                                 .userService(kakaoOAuth2MemberService) // 사용자 정보 처리
                         )
                         .successHandler((request, response, authentication) -> {
                             OAuth2User user = (OAuth2User) authentication.getPrincipal();
-                            String memberId = user.getAttribute("id"); // 사용자 고유 ID: memberId(카카오에서 제공)
-                            response.sendRedirect("/" + memberId + "/home");
+                            String providerId = user.getAttribute("id"); // 사용자 고유 ID: memberId(카카오에서 제공)
+                            response.sendRedirect("/" + providerId + "/home");
                         })
-
-                ).logout(logout -> logout
-                        .logoutUrl("/logout") // 로그아웃 엔드포인트
+                )
+                .logout(logout -> logout
+                        //.logoutRequestMatcher(new AntPathRequestMatcher("/api/logout", "GET")) // GET 요청으로 로그아웃 허용(로컬 테스트 이후에 삭제 필요)
+                        .logoutUrl("/api/logout") // POST 요청만 허용 (웹 브라우저에서 로컬 테스트 시 주석 처리 필수)
                         .logoutSuccessUrl("/logout-success") // 로그아웃 성공 후 리다이렉트 경로
                         .invalidateHttpSession(true) // 세션 무효화
                         .deleteCookies("JSESSIONID") // 쿠키 삭제
