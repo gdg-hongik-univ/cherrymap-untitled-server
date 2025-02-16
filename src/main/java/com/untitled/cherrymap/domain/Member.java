@@ -15,18 +15,23 @@ public class Member {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "member_id")
     @Schema(description = "사용자 ID")
     private Long id;
 
-    @Column(nullable = false, length = 50)
+    @Column(name = "nickname", nullable = false, length = 10)
     @Schema(description = "사용자 닉네임", example = "cherryUser")
     private String nickname;
 
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(name = "email", nullable = false, unique = true)
     @Schema(description = "사용자 이메일", example = "user@example.com")
     private String email;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "provider_id", nullable = false, unique = true)
     @Schema(description = "소셜 로그인 제공자의 고유 ID", example = "kakao_123456789")
     private String providerId; // 카카오 고유 ID
+
+    @Column(name = "phone_number", length = 20)
+    @Schema(description = "사용자 비상 연락처", example = "010-1234-5678")
+    private String phoneNumber;
 }
