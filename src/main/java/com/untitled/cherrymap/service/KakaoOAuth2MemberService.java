@@ -23,6 +23,10 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
+        if (attributes == null || !attributes.containsKey("id")) {
+            throw new IllegalStateException("Invalid Kakao response: missing id");
+        }
+
         // 카카오 계정 정보 추출
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") : null;
@@ -53,16 +57,10 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
         }
         memberRepository.save(member);
 
-        // 사용자 정보를 DefaultOAuth2User로 반환
-        Map<String, Object> customAttributes = Map.of(
-                "id", providerId,
-                "nickname", member.getNickname(),
-                "email", member.getEmail()
-        );
-
+        // providerId를 인증 객체의 Principal로 설정
         return new DefaultOAuth2User(
                 oAuth2User.getAuthorities(),
-                customAttributes,
+                attributes,
                 "id"
         );
     }
