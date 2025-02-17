@@ -1,12 +1,22 @@
 package com.untitled.cherrymap.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.untitled.cherrymap.service.KakaoOAuth2MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 @RequiredArgsConstructor
@@ -18,13 +28,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers(
-                                "/api/**", "/api/login/oauth2/**", "/api/logout", "/api/error" // CSRF 예외 추가
-                        )
+                        .ignoringRequestMatchers("/api/**", "/api/login/oauth2/**", "/api/logout", "/api/error")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/**").permitAll() // /api/** 경로는 인증 불필요
-                        .anyRequest().authenticated() // 그 외 경로는 인증 필요
+                        .anyRequest().permitAll() // ✅ 모든 요청을 인증 없이 허용
                 )
                 .oauth2Login(oauth2 -> oauth2
                         .authorizationEndpoint(authEndpoint -> authEndpoint
@@ -34,23 +41,25 @@ public class SecurityConfig {
                                 .userService(kakaoOAuth2MemberService)
                         )
                         .successHandler((request, response, authentication) -> {
-                            String requestURI = request.getRequestURI();
-                            if (requestURI.startsWith("/api")) {
-                                // /api/** 경로에 대해 리다이렉트 방지
-                                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                                response.getWriter().write("{\"error\": \"Authentication required\"}");
-                            } else {
-                                response.sendRedirect("/home");
-                            }
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("{\"message\": \"Login successful\"}");
                         })
+                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // ✅ 세션 사용 안 함
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/logout")
-                        .logoutSuccessUrl("/logout-success")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(200);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("{\"message\": \"Logout successful\"}");
+                        })
                 );
+
         return http.build();
     }
 }
