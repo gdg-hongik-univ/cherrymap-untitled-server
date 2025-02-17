@@ -43,6 +43,7 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .nickname(nickname)
                     .email(email)
+                    .phoneNumber(null)
                     .build();
             System.out.println("새 사용자 등록: " + nickname + " (" + email + ")");
         } else {

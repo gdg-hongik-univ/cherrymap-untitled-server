@@ -1,40 +1,26 @@
 package com.untitled.cherrymap.controller;
 
 import com.untitled.cherrymap.domain.Member;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.service.MemberService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
+@RequiredArgsConstructor
+@Tag(name="Member-Controller",description = "유저 정보 조회 API")
 public class MemberController {
 
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
-    public MemberController(MemberRepository memberRepository) {
-        this.memberRepository = memberRepository;
-    }
-
-    @GetMapping("/{memberId}/info")
-    public ResponseEntity<?> getCurrentUser(@AuthenticationPrincipal OAuth2User user) {
-        if (user == null) {
-            return ResponseEntity.badRequest().body("User not authenticated");
-        }
-
-        String providerId = user.getAttribute("id");
-        Member member = memberRepository.findByProviderId(providerId);
-
-        if (member == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "nickname", member.getNickname(),
-                "email", member.getEmail()
-        ));
+    @Operation(summary = "사용자 정보 요청", description = "providerId에 해당하는 유저 정보를 json 형태로 반환.")
+    @GetMapping("/api/{providerId}/info")
+    public ResponseEntity<Member> getMember(@PathVariable String providerId) {
+        Member member = memberService.getMemberByProviderId(providerId);
+        return ResponseEntity.ok().body(member);
     }
 }
