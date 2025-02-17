@@ -36,5 +36,4 @@ out/
 ### VS Code ###
 .vscode/
 
-# 배포용 설정 파일 제외
-src/main/resources/application-prod.properties
+# 배포용 설정 파일 release 위해 .gitignore에서 삭제(25.02.17)
