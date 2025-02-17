@@ -1,5 +1,4 @@
 package com.untitled.cherrymap.service;
-
 import com.untitled.cherrymap.domain.Member;
 import com.untitled.cherrymap.repository.MemberRepository;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -23,10 +22,6 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
         OAuth2User oAuth2User = super.loadUser(userRequest);
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
-        if (attributes == null || !attributes.containsKey("id")) {
-            throw new IllegalStateException("Invalid Kakao response: missing id");
-        }
-
         // 카카오 계정 정보 추출
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
         Map<String, Object> profile = kakaoAccount != null ? (Map<String, Object>) kakaoAccount.get("profile") : null;
@@ -47,7 +42,6 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
                     .providerId(providerId)
                     .nickname(nickname)
                     .email(email)
-                    .phoneNumber(null)
                     .build();
             System.out.println("새 사용자 등록: " + nickname + " (" + email + ")");
         } else {
@@ -57,10 +51,16 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
         }
         memberRepository.save(member);
 
-        // providerId를 인증 객체의 Principal로 설정
+        // 사용자 정보를 DefaultOAuth2User로 반환
+        Map<String, Object> customAttributes = Map.of(
+                "id", providerId,
+                "nickname", member.getNickname(),
+                "email", member.getEmail()
+        );
+
         return new DefaultOAuth2User(
                 oAuth2User.getAuthorities(),
-                attributes,
+                customAttributes,
                 "id"
         );
     }
