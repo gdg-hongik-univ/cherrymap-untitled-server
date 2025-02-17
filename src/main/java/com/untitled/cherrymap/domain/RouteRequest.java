@@ -6,7 +6,7 @@ import java.util.List;
 @Schema(description = "경로 요청 데이터")
 public class RouteRequest {
 
-    @Schema(description = "대중교통 모드 : subway or bus")
+    @Schema(description = "대중교통 모드", example = "subway")
     private String mode;
 
     @Schema(description = "사용자의 현재 위치", example = "서울역")
