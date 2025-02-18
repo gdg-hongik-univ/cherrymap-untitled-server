@@ -49,11 +49,11 @@ public class KakaoOAuth2MemberService extends DefaultOAuth2UserService {
                     .email(email)
                     .phoneNumber(null)
                     .build();
-            System.out.println("새 사용자 등록: " + nickname + " (" + email + ")");
+            //System.out.println("새 사용자 등록: " + nickname + " (" + email + ")");
         } else {
             member.setNickname(nickname);
             member.setEmail(email);
-            System.out.println("기존 사용자 업데이트: " + nickname + " (" + email + ")");
+            //System.out.println("기존 사용자 업데이트: " + nickname + " (" + email + ")");
         }
         memberRepository.save(member);
 
