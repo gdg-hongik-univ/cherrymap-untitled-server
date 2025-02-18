@@ -28,6 +28,10 @@ public class Route {
     @Schema(description = "경로 이름", example = "홍익대학교")
     private String routeName;
 
+    @Column(name = "mode", nullable = false, length = 10)
+    @Schema(description = "경로 유형: 도보 or 대중교통", example = "대중교통")
+    private String mode;
+
     @Column(name = "start_name", nullable = false, length = 20)
     @Schema(description = "출발지 이름", example = "강남역")
     private String startName;

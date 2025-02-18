@@ -3,9 +3,11 @@ package com.untitled.cherrymap.service;
 import com.untitled.cherrymap.domain.Member;
 import com.untitled.cherrymap.domain.Route;
 import com.untitled.cherrymap.dto.RouteCreateRequest;
+import com.untitled.cherrymap.exception.BadDataAccessException;
+import com.untitled.cherrymap.exception.BadRequestException;
+import com.untitled.cherrymap.message.ErrorMessage;
 import com.untitled.cherrymap.repository.MemberRepository;
 import com.untitled.cherrymap.repository.RouteRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +26,23 @@ public class RouteService {
     public Long createRoute(RouteCreateRequest request, String providerId) {
         Member member = memberRepository.findByProviderId(providerId);
         if (member == null) {
-            throw new RuntimeException("Member not found with providerId: " + providerId);
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
+        }
+
+        // 중복 경로 검사
+        boolean exists = routeRepository.existsByRouteDetails(
+                request.getMode(),
+                request.getStartLat(), request.getStartLng(),
+                request.getEndLat(), request.getEndLng()
+        );
+
+        if (exists) {
+            throw new BadRequestException(ErrorMessage.DUPLICATE_ROUTE);
         }
 
         Route route = Route.builder().member(member)
                 .routeName(request.getRouteName())
+                .mode(request.getMode())
                 .startName(request.getStartName())
                 .startLat(request.getStartLat())
                 .startLng(request.getStartLng())
@@ -45,7 +59,7 @@ public class RouteService {
     public List<Route> getAllRoute(String providerId) {
         Member member = memberRepository.findByProviderId(providerId);
         if (member == null) {
-            throw new RuntimeException("Member not found with providerId: " + providerId);
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
         }
         return routeRepository.findAllByMember(member);
     }
@@ -65,17 +79,16 @@ public class RouteService {
     // 유저의 권한 확인 및 특정 경로 탐색
     private Route validateMemberAndGetRoute(String providerId, Long routeId) {
         Member member = memberRepository.findByProviderId(providerId);
-        System.out.println("조회된 Member: " + member);
+        //System.out.println("조회된 Member: " + member);
         if (member == null) {
-            throw new RuntimeException("Member not found with providerId: " + providerId);
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
         }
 
         Route route = routeRepository.findById(routeId)
-                .orElseThrow(() -> new EntityNotFoundException("Route not found with id: " + routeId));
-        System.out.println("조회된 Route: " + route);
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.ROUTE_NOT_FOUND_WITH + routeId));
+        //System.out.println("조회된 Route: " + route);
         if (!member.equals(route.getMember())) {
-            throw new RuntimeException("Access denied: Member with providerId " + providerId
-                    + " does not own Route with id: " + routeId);
+            throw new BadDataAccessException(ErrorMessage.ACCESS_DENIED);
         }
         return route;
     }
