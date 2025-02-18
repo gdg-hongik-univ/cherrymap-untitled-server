@@ -1,6 +1,8 @@
 package com.untitled.cherrymap.service;
 
 import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.exception.BadRequestException;
+import com.untitled.cherrymap.message.ErrorMessage;
 import com.untitled.cherrymap.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,7 +18,7 @@ public class MemberService {
     public Member getMemberByProviderId(String providerId) {
         Member member = memberRepository.findByProviderId(providerId);
         if (member == null) {
-            throw new RuntimeException("Member not found with providerId: " + providerId);
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
         }
         return member;
     }
