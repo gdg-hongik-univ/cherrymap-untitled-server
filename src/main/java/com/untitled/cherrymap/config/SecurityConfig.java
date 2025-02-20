@@ -58,6 +58,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(List.of(
                 "http://localhost:8080",
+                "http://localhost:5173",
                 "http://ec2-3-38-212-108.ap-northeast-2.compute.amazonaws.com:8080"
         ));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
