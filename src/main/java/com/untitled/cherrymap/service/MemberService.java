@@ -22,4 +22,32 @@ public class MemberService {
         }
         return member;
     }
+
+    @Transactional(readOnly = true)
+    public String getPhoneNumber(String providerId) {
+        Member member = memberRepository.findByProviderId(providerId);
+        if (member == null) {
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
+        }
+        return member.getPhoneNumber(); // null일 수도 있음
+    }
+
+    @Transactional
+    public void updatePhoneNumber(String providerId, String phoneNumber) {
+        Member member = memberRepository.findByProviderId(providerId);
+        if (member == null) {
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
+        }
+        member.setPhoneNumber(phoneNumber);
+    }
+
+    @Transactional
+    public void deletePhoneNumber(String providerId) {
+        Member member = memberRepository.findByProviderId(providerId);
+        if (member == null) {
+            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
+        }
+        member.setPhoneNumber(null);
+    }
+
 }
