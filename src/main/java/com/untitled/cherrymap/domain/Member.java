@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Getter
 @Setter
@@ -23,15 +25,24 @@ public class Member {
     @Schema(description = "사용자 닉네임", example = "cherryUser")
     private String nickname;
 
-    @Column(name = "email", nullable = false, unique = true)
-    @Schema(description = "사용자 이메일", example = "user@example.com")
-    private String email;
+    @Column(name = "username", length = 50, nullable = false)
+    private String username;
 
-    @Column(name = "provider_id", nullable = false, unique = true)
-    @Schema(description = "소셜 로그인 제공자의 고유 ID", example = "kakao_123456789")
-    private String providerId; // 카카오 고유 ID
+    @Column(name = "password", length = 255, nullable = false)
+    private String password;
+
+    @Column(name = "role", nullable = false)
+    private String role;
 
     @Column(name = "phone_number", length = 20)
     @Schema(description = "사용자 비상 연락처", example = "010-1234-5678")
     private String phoneNumber;
+
+    public Member(String nickname, String password, String username, String phoneNumber, String role) {
+        this.nickname = nickname;
+        this.username = username;
+        this.password = password;
+        this.role = role;
+        this.phoneNumber = phoneNumber;
+    }
 }
