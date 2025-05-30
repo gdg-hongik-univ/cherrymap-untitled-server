@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.service;
+/*package com.untitled.cherrymap.service;
 
 import org.springframework.stereotype.Service;
 import java.util.HashMap;
@@ -23,4 +23,6 @@ public class TemplateService {
 
         return template;
     }
+
 }
+ */

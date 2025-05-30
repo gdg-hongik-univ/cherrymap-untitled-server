@@ -23,11 +23,9 @@ public class RouteService {
 
     // 경로 생성
     @Transactional
-    public Long createRoute(RouteCreateRequest request, String providerId) {
-        Member member = memberRepository.findByProviderId(providerId);
-        if (member == null) {
-            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
-        }
+    public Long createRoute(RouteCreateRequest request, Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
 
         // 중복 경로 검사
         boolean exists = routeRepository.existsByRouteDetails(
@@ -56,37 +54,34 @@ public class RouteService {
     }
     // 전체 경로 조회
     @Transactional(readOnly = true)
-    public List<Route> getAllRoute(String providerId) {
-        Member member = memberRepository.findByProviderId(providerId);
-        if (member == null) {
-            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
-        }
+    public List<Route> getAllRoute(Long id) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
         return routeRepository.findAllByMember(member);
     }
 
     // 특정 경로 조회
     @Transactional(readOnly = true)
-    public Route getOneRoute(String providerId, Long routeId) {
-        return validateMemberAndGetRoute(providerId, routeId);
+    public Route getOneRoute(Long id, Long routeId) {
+        return validateMemberAndGetRoute(id, routeId);
     }
 
     // 경로 삭제
     @Transactional
-    public void deleteRoute(String providerId, Long routeId) {
-        Route route = validateMemberAndGetRoute(providerId, routeId);
+    public void deleteRoute(Long id, Long routeId) {
+        Route route = validateMemberAndGetRoute(id, routeId);
         routeRepository.delete(route);
     }
     // 유저의 권한 확인 및 특정 경로 탐색
-    private Route validateMemberAndGetRoute(String providerId, Long routeId) {
-        Member member = memberRepository.findByProviderId(providerId);
+    private Route validateMemberAndGetRoute(Long id, Long routeId) {
+        Member member = memberRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
         //System.out.println("조회된 Member: " + member);
-        if (member == null) {
-            throw new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + providerId);
-        }
 
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new BadRequestException(ErrorMessage.ROUTE_NOT_FOUND_WITH + routeId));
         //System.out.println("조회된 Route: " + route);
+
         if (!member.equals(route.getMember())) {
             throw new BadDataAccessException(ErrorMessage.ACCESS_DENIED);
         }

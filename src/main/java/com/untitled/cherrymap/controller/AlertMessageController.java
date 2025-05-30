@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.controller;
+/*package com.untitled.cherrymap.controller;
 
 import com.untitled.cherrymap.domain.RouteRequest;
 import com.untitled.cherrymap.service.AlertMessageService;
@@ -32,4 +32,6 @@ public class AlertMessageController {
         ));
 
     }
+
 }
+ */
