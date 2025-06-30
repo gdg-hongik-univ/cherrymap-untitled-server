@@ -1,7 +1,7 @@
-package com.untitled.cherrymap.jwt;
+package com.untitled.cherrymap.security.jwt;
 
 import com.untitled.cherrymap.domain.Member;
-import com.untitled.cherrymap.dto.auth.CustomUserDetailsDTO;
+import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
 import com.untitled.cherrymap.repository.MemberRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

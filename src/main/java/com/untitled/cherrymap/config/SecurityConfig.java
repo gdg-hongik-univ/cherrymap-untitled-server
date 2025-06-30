@@ -1,9 +1,9 @@
 package com.untitled.cherrymap.config;
 
-import com.untitled.cherrymap.jwt.CustomLogoutFilter;
-import com.untitled.cherrymap.jwt.JWTFilter;
-import com.untitled.cherrymap.jwt.JWTUtil;
-import com.untitled.cherrymap.jwt.LoginFilter;
+import com.untitled.cherrymap.security.jwt.CustomLogoutFilter;
+import com.untitled.cherrymap.security.jwt.JWTFilter;
+import com.untitled.cherrymap.security.jwt.JWTUtil;
+import com.untitled.cherrymap.security.jwt.LoginFilter;
 import com.untitled.cherrymap.repository.MemberRepository;
 import com.untitled.cherrymap.repository.auth.RefreshRepository;
 import lombok.RequiredArgsConstructor;
@@ -42,6 +42,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository);
+        loginFilter.setFilterProcessesUrl("/api/login");
+
         http
                 // CSRF 보호 비활성화 (JWT 기반이므로 필요 없음)
                 .csrf(csrf -> csrf.disable())
@@ -52,7 +55,7 @@ public class SecurityConfig {
                 // 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능한 공개 경로
-                        .requestMatchers("/", "/login", "/join","/check-nickname", "/reissue","/logout").permitAll()
+                        .requestMatchers("/", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout").permitAll()
                         // 관리자 권한이 필요한 경로
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // 그 외 모든 요청은 인증 필요
@@ -61,8 +64,7 @@ public class SecurityConfig {
                 // JWT 토큰 필터: 인증된 요청을 처리
                 .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), LoginFilter.class)
                 // 로그인 필터: 로그인 시 토큰 생성
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 // 로그아웃 필터: 리프레시 토큰 제거
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class)
                 // 세션 생성 안 함 (JWT 방식이므로 무상태)

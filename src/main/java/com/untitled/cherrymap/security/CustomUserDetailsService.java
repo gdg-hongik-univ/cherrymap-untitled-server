@@ -1,7 +1,7 @@
-package com.untitled.cherrymap.service.auth;
+package com.untitled.cherrymap.security;
 
 import com.untitled.cherrymap.domain.Member;
-import com.untitled.cherrymap.dto.auth.CustomUserDetailsDTO;
+import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
 import com.untitled.cherrymap.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

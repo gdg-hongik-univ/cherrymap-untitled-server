@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.dto.auth;
+package com.untitled.cherrymap.security.dto;
 
 import com.untitled.cherrymap.domain.Member;
 import lombok.Getter;

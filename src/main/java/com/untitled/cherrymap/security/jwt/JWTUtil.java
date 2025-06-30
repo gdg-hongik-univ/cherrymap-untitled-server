@@ -1,11 +1,11 @@
-package com.untitled.cherrymap.jwt;
+package com.untitled.cherrymap.security.jwt;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
@@ -16,8 +16,8 @@ public class JWTUtil {
     private SecretKey secretKey;
 
     // application.yml의 시크릿 기반으로 SecretKey 생성
-    public JWTUtil(@Value("${spring.jwt.secret}")String secret) {
-        this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+    public JWTUtil(@Value("${spring.jwt.secret}") String secret) {
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     // 검증

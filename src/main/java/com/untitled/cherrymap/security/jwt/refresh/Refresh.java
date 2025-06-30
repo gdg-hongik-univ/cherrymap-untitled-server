@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.domain.auth;
+package com.untitled.cherrymap.security.jwt.refresh;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,7 +1,6 @@
-package com.untitled.cherrymap.service.auth;
+package com.untitled.cherrymap.security.jwt.refresh;
 
-import com.untitled.cherrymap.domain.auth.Refresh;
-import com.untitled.cherrymap.jwt.JWTUtil;
+import com.untitled.cherrymap.security.jwt.JWTUtil;
 import com.untitled.cherrymap.repository.auth.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;

@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.jwt;
+package com.untitled.cherrymap.security.jwt;
 
 import com.untitled.cherrymap.repository.auth.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -32,7 +32,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String requestUri = request.getRequestURI();
         String requestMethod = request.getMethod();
 
-        if (!requestUri.equals("/logout") || !requestMethod.equals("POST")) {
+        if (!requestUri.equals("/api/logout") || !requestMethod.equals("POST")) {
             filterChain.doFilter(request, response);
             return;
         }

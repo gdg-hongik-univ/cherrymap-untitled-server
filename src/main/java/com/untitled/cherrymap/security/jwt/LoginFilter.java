@@ -1,7 +1,7 @@
-package com.untitled.cherrymap.jwt;
+package com.untitled.cherrymap.security.jwt;
 
-import com.untitled.cherrymap.domain.auth.Refresh;
-import com.untitled.cherrymap.dto.auth.CustomUserDetailsDTO;
+import com.untitled.cherrymap.security.jwt.refresh.Refresh;
+import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
 import com.untitled.cherrymap.repository.auth.RefreshRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;

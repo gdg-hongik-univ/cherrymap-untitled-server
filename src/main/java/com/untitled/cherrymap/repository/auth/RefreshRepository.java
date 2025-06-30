@@ -1,6 +1,6 @@
 package com.untitled.cherrymap.repository.auth;
 
-import com.untitled.cherrymap.domain.auth.Refresh;
+import com.untitled.cherrymap.security.jwt.refresh.Refresh;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
