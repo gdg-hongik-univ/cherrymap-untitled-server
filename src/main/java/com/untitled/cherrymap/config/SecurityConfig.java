@@ -56,11 +56,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:8080",
-                "http://localhost:5173",
-                "http://ec2-3-38-212-108.ap-northeast-2.compute.amazonaws.com:8080"
-        ));
+        configuration.setAllowedOriginPatterns(List.of("*")); // 모든 도메인 허용 (개발/테스트용)
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
