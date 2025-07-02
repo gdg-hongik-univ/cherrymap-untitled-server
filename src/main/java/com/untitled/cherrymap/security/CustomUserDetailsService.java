@@ -1,9 +1,9 @@
 package com.untitled.cherrymap.security;
 
-import com.untitled.cherrymap.member.Member;
-import com.untitled.cherrymap.member.exception.MemberNotFoundException;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.exception.MemberNotFoundException;
 import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
-import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

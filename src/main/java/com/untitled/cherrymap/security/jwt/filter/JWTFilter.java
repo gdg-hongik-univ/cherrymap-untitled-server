@@ -2,9 +2,9 @@ package com.untitled.cherrymap.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.untitled.cherrymap.common.dto.ErrorResponse;
-import com.untitled.cherrymap.member.Member;
+import com.untitled.cherrymap.domain.member.domain.Member;
 import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
-import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import com.untitled.cherrymap.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;

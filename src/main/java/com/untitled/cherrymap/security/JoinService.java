@@ -1,10 +1,9 @@
 package com.untitled.cherrymap.security;
 
-import com.untitled.cherrymap.member.Member;
-import com.untitled.cherrymap.member.exception.DuplicateNicknameException;
-import com.untitled.cherrymap.member.exception.MemberErrorCode;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
-import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

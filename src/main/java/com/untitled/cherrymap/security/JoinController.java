@@ -1,9 +1,9 @@
 package com.untitled.cherrymap.security;
 
 import com.untitled.cherrymap.common.dto.SuccessResponse;
-import com.untitled.cherrymap.member.exception.DuplicateNicknameException;
+import com.untitled.cherrymap.domain.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
-import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
