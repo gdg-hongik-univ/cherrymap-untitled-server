@@ -1,7 +1,9 @@
 package com.untitled.cherrymap.security;
 
+import com.untitled.cherrymap.common.dto.SuccessResponse;
+import com.untitled.cherrymap.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,19 +25,27 @@ public class JoinController {
     private final MemberRepository memberRepository;
 
     @PostMapping("/join")
-    public String joinProcess(@RequestBody JoinDTO joinDTO) {
+    public ResponseEntity<SuccessResponse> joinProcess(@RequestBody JoinDTO joinDTO) {
         joinService.joinProcess(joinDTO);
-
-        return "ok";
+        return ResponseEntity.ok(
+                SuccessResponse.success(201, Map.of("nickname", joinDTO.getNickname(), "message", "회원가입 완료"))
+        );
     }
 
     @GetMapping("/check-nickname")
-    public ResponseEntity<?> checkNickname(@RequestParam String nickname) {
+    public ResponseEntity<SuccessResponse<Map<String, Object>>> checkNickname(@RequestParam String nickname) {
         boolean exists = memberRepository.existsByNickname(nickname);
-        return ResponseEntity.ok(Map.of(
-                "exists", exists,
-                "message", exists ? "이미 사용 중인 닉네임입니다." : "사용 가능한 닉네임입니다."
-        ));
+
+        if (exists) {
+            throw DuplicateNicknameException.EXCEPTION;
+        }
+
+        return ResponseEntity.ok(
+                SuccessResponse.success(200, Map.of(
+                        "message", "사용 가능한 닉네임입니다."
+                ))
+        );
     }
+
 
 }

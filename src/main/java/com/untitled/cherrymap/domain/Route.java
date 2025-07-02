@@ -1,5 +1,6 @@
 package com.untitled.cherrymap.domain;
 
+import com.untitled.cherrymap.member.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;

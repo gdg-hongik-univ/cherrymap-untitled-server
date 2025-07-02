@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.security.jwt;
+package com.untitled.cherrymap.security.jwt.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

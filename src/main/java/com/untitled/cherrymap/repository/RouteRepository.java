@@ -1,6 +1,6 @@
 package com.untitled.cherrymap.repository;
 
-import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.member.Member;
 import com.untitled.cherrymap.domain.Route;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

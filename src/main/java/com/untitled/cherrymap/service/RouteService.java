@@ -1,12 +1,12 @@
 package com.untitled.cherrymap.service;
 
-import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.member.Member;
 import com.untitled.cherrymap.domain.Route;
 import com.untitled.cherrymap.dto.RouteCreateRequest;
 import com.untitled.cherrymap.exception.BadDataAccessException;
 import com.untitled.cherrymap.exception.BadRequestException;
 import com.untitled.cherrymap.message.ErrorMessage;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.member.MemberRepository;
 import com.untitled.cherrymap.repository.RouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

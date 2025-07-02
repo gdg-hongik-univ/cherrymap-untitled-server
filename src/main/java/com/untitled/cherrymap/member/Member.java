@@ -1,10 +1,8 @@
-package com.untitled.cherrymap.domain;
+package com.untitled.cherrymap.member;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.time.LocalDate;
 
 @Entity
 @Getter

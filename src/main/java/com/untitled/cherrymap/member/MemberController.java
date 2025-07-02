@@ -1,8 +1,6 @@
-package com.untitled.cherrymap.controller;
+package com.untitled.cherrymap.member;
 
-import com.untitled.cherrymap.domain.Member;
 import com.untitled.cherrymap.dto.PhoneNumberRequest;
-import com.untitled.cherrymap.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

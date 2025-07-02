@@ -1,9 +1,7 @@
-package com.untitled.cherrymap.service;
+package com.untitled.cherrymap.member;
 
-import com.untitled.cherrymap.domain.Member;
 import com.untitled.cherrymap.exception.BadRequestException;
 import com.untitled.cherrymap.message.ErrorMessage;
-import com.untitled.cherrymap.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

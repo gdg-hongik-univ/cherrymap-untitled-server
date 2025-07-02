@@ -1,8 +1,11 @@
-package com.untitled.cherrymap.security.jwt;
+package com.untitled.cherrymap.security.jwt.filter;
 
-import com.untitled.cherrymap.domain.Member;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.untitled.cherrymap.common.dto.ErrorResponse;
+import com.untitled.cherrymap.member.Member;
 import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,14 +22,16 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
-// API 요청마다 실행되는 JWT 인증 필터
-// Access 토큰이 존재하면 해당 토큰을 검증하고, 인증 객체를 SecurityContext에 등록
-
+/**
+ * 모든 요청에서 Access 토큰을 검사하고,
+ * 유효한 경우 인증 객체를 SecurityContext에 등록
+ */
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;      // DB에서 사용자 정보 조회용
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -44,11 +49,14 @@ public class JWTFilter extends OncePerRequestFilter {
         try {
             jwtUtil.isExpired(accessToken);
         } catch (ExpiredJwtException e) {
-            PrintWriter writer = response.getWriter();
-            writer.print("access token expired");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json; charset=UTF-8");
+            objectMapper.writeValue(response.getWriter(), ErrorResponse.of(
+                    401, "ACCESS_401", "Access 토큰이 만료되었습니다.", request.getRequestURI()
+            ));
             return;
         }
+
 
         // 해당 토큰이 Access 토큰인지 확인
         String category = jwtUtil.getCategory(accessToken);

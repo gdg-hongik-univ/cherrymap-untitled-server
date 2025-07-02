@@ -1,11 +1,13 @@
 package com.untitled.cherrymap.config;
 
-import com.untitled.cherrymap.security.jwt.CustomLogoutFilter;
-import com.untitled.cherrymap.security.jwt.JWTFilter;
-import com.untitled.cherrymap.security.jwt.JWTUtil;
-import com.untitled.cherrymap.security.jwt.LoginFilter;
-import com.untitled.cherrymap.repository.MemberRepository;
-import com.untitled.cherrymap.repository.auth.RefreshRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.untitled.cherrymap.security.jwt.JwtProperties;
+import com.untitled.cherrymap.security.jwt.filter.CustomLogoutFilter;
+import com.untitled.cherrymap.security.jwt.filter.JWTFilter;
+import com.untitled.cherrymap.security.jwt.util.JWTUtil;
+import com.untitled.cherrymap.security.jwt.filter.LoginFilter;
+import com.untitled.cherrymap.member.MemberRepository;
+import com.untitled.cherrymap.security.jwt.refresh.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +30,8 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final MemberRepository memberRepository;
     private final RefreshRepository refreshRepository;
+    private final ObjectMapper objectMapper;
+    private final JwtProperties jwtProperties;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -42,7 +46,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository);
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, objectMapper, jwtProperties);
         loginFilter.setFilterProcessesUrl("/api/login");
 
         http
@@ -62,11 +66,11 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 // JWT 토큰 필터: 인증된 요청을 처리
-                .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), LoginFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil, memberRepository,objectMapper), LoginFilter.class)
                 // 로그인 필터: 로그인 시 토큰 생성
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
                 // 로그아웃 필터: 리프레시 토큰 제거
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class)
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository, objectMapper), LogoutFilter.class)
                 // 세션 생성 안 함 (JWT 방식이므로 무상태)
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
