@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.service;
+/*package com.untitled.cherrymap.service;
 
 import org.springframework.stereotype.Service;
 
@@ -44,4 +44,6 @@ public class AlertMessageService {
 
         return "잘 가고 있습니다!";
     }
+
 }
+ */

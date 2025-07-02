@@ -1,98 +1,75 @@
 package com.untitled.cherrymap.config;
 
-import com.untitled.cherrymap.service.KakaoOAuth2MemberService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import com.untitled.cherrymap.security.jwt.CustomLogoutFilter;
+import com.untitled.cherrymap.security.jwt.JWTFilter;
+import com.untitled.cherrymap.security.jwt.JWTUtil;
+import com.untitled.cherrymap.security.jwt.LoginFilter;
+import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.repository.auth.RefreshRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
+@EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final KakaoOAuth2MemberService kakaoOAuth2MemberService;
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JWTUtil jwtUtil;
+    private final MemberRepository memberRepository;
+    private final RefreshRepository refreshRepository;
+
+    //AuthenticationManager Bean 등록
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**", "/api/login/oauth2/**", "/api/logout", "/api/error")
-                )
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // 모든 요청을 인증 없이 허용
-                )
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(kakaoOAuth2MemberService)
-                        )
-                        .successHandler(this::handleLoginSuccess) // 로그인 성공 시 providerId로 리다이렉트
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션 사용 안 함
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/logout")
-                        .logoutSuccessHandler(this::handleLogoutSuccess) // 로그아웃 후 리다이렉트
-                );
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository);
+        loginFilter.setFilterProcessesUrl("/api/login");
+
+        http
+                // CSRF 보호 비활성화 (JWT 기반이므로 필요 없음)
+                .csrf(csrf -> csrf.disable())
+                // Form 로그인 방식 비활성화
+                .formLogin(form -> form.disable())
+                // HTTP Basic 인증 방식 비활성화
+                .httpBasic(httpBasic -> httpBasic.disable())
+                // 경로별 인가 설정
+                .authorizeHttpRequests(auth -> auth
+                        // 누구나 접근 가능한 공개 경로
+                        .requestMatchers("/", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout").permitAll()
+                        // 관리자 권한이 필요한 경로
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        // 그 외 모든 요청은 인증 필요
+                        .anyRequest().authenticated()
+                )
+                // JWT 토큰 필터: 인증된 요청을 처리
+                .addFilterBefore(new JWTFilter(jwtUtil, memberRepository), LoginFilter.class)
+                // 로그인 필터: 로그인 시 토큰 생성
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class)
+                // 로그아웃 필터: 리프레시 토큰 제거
+                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class)
+                // 세션 생성 안 함 (JWT 방식이므로 무상태)
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 
-    // CORS 설정을 직접 추가하는 메서드
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of(
-                "http://localhost:8080",
-                "http://localhost:5173",
-                "http://ec2-3-38-212-108.ap-northeast-2.compute.amazonaws.com:8080"
-        ));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    // 로그인 성공 후 providerId를 가져와서 /{providerId}/home으로 리다이렉트
-    private void handleLoginSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        if (authentication == null || authentication.getPrincipal() == null) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Authentication principal is null");
-            return;
-        }
-
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
-        Map<String, Object> attributes = oAuth2User.getAttributes();
-
-        // providerId 가져오기
-        String providerId = attributes.getOrDefault("id", "Unknown").toString();
-        if (providerId.equals("Unknown")) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Provider ID is missing");
-            return;
-        }
-
-        String redirectUrl = "/" + providerId + "/home";
-        response.sendRedirect(redirectUrl);
-    }
-
-    // 로그아웃 성공 후 /logout-success로 리다이렉트
-    private void handleLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        response.sendRedirect("/logout-success");
-    }
 }
