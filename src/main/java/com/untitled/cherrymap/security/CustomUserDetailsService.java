@@ -1,8 +1,9 @@
 package com.untitled.cherrymap.security;
 
-import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.exception.MemberNotFoundException;
 import com.untitled.cherrymap.security.dto.CustomUserDetailsDTO;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         Member member = memberRepository.findByNickname(nickname);
 
         if (member == null) {
-            throw new UsernameNotFoundException("해당 닉네임의 사용자를 찾을 수 없습니다.");
+            throw MemberNotFoundException.EXCEPTION;
         }
 
         return new CustomUserDetailsDTO(member);

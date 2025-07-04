@@ -1,8 +1,9 @@
 package com.untitled.cherrymap.security;
 
-import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
-import com.untitled.cherrymap.repository.MemberRepository;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ public class JoinService {
         String phoneNumber = joinDTO.getPhoneNumber();
 
         if (memberRepository.existsByNickname(nickname)) {
-            throw new IllegalArgumentException("이미 존재하는 닉네임입니다.");
+            throw DuplicateNicknameException.EXCEPTION;
         }
 
         Member data = Member.builder()

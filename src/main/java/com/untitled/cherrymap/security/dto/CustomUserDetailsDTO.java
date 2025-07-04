@@ -1,6 +1,6 @@
 package com.untitled.cherrymap.security.dto;
 
-import com.untitled.cherrymap.domain.Member;
+import com.untitled.cherrymap.domain.member.domain.Member;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
