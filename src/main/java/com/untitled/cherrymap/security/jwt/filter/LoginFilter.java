@@ -3,6 +3,7 @@ package com.untitled.cherrymap.security.jwt.filter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.untitled.cherrymap.common.dto.ErrorResponse;
 import com.untitled.cherrymap.common.dto.SuccessResponse;
+import com.untitled.cherrymap.domain.member.domain.Member;
 import com.untitled.cherrymap.security.exception.loginException.LoginFailedException;
 import com.untitled.cherrymap.security.jwt.JwtProperties;
 import com.untitled.cherrymap.security.jwt.util.JWTUtil;
@@ -21,6 +22,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Map;
 
@@ -57,23 +59,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                          FilterChain chain, Authentication authentication) throws IOException {
 
-        // 사용자 정보 추출
-        CustomUserDetailsDTO user = (CustomUserDetailsDTO) authentication.getPrincipal();
-        String nickname = user.getUsername();
+        // 사용자 정보
+        CustomUserDetailsDTO userDetails = (CustomUserDetailsDTO) authentication.getPrincipal();
+        Member member = userDetails.getMember(); // 직접 member 엔티티 사용
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-        // 만료 시간 설정
+        // 토큰 만료 시간
         Long accessExp = jwtProperties.getAccessTokenExpirationMs();
         Long refreshExp = jwtProperties.getRefreshTokenExpirationMs();
 
-        // 토큰 생성
-        String access = jwtUtil.createJwt("access", nickname, role, accessExp);
-        String refresh = jwtUtil.createJwt("refresh", nickname, role, refreshExp);
+        // memberId를 기반으로 JWT 생성
+        String access = jwtUtil.createJwt("access", member.getId().toString(), role, accessExp);
+        String refresh = jwtUtil.createJwt("refresh", member.getId().toString(), role, refreshExp);
 
-        // Refresh 저장
-        addRefresh(nickname, refresh, refreshExp);
+        // refresh 저장
+        addRefresh(member, refresh, refreshExp);
 
-        // 응답 구성
+        // 응답 설정
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=UTF-8");
         response.addHeader("access", access);
@@ -81,11 +83,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         SuccessResponse<?> successResponse = SuccessResponse.success(200, Map.of(
                 "message", "로그인에 성공했습니다.",
-                "nickname", nickname
+                "nickname", member.getNickname()
         ));
+
         response.getWriter().write(objectMapper.writeValueAsString(successResponse));
     }
-
 
     @Override
     public void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response,
@@ -105,18 +107,19 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private Cookie createCookie(String key, String value, Long maxAgeMs) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge((int)(maxAgeMs / 1000)); // 초 단위로 변환
+        cookie.setMaxAge((int)(maxAgeMs / 1000)); // 초 단위
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         return cookie;
     }
 
-    private void addRefresh(String nickname, String refreshToken, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
+    private void addRefresh(Member member, String refreshToken, Long expiredMs) {
         Refresh refresh = Refresh.builder()
-                .nickname(nickname)
+                .member(member)
                 .refresh(refreshToken)
-                .expiration(date.toString())
+                .expiration(LocalDateTime.now().plusSeconds(expiredMs / 1000))
                 .build();
+
         refreshRepository.save(refresh);
     }
 }
