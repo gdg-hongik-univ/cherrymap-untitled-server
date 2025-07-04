@@ -1,14 +1,10 @@
 package com.untitled.cherrymap.security.jwt.refresh;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -20,7 +16,14 @@ public class Refresh {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nickname;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @Column(unique = true, nullable = false, length = 350)
     private String refresh;
-    private String expiration;
+
+    @Column(nullable = false)
+    private LocalDateTime expiration;
 }
