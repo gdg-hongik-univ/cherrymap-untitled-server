@@ -3,6 +3,7 @@ package com.untitled.cherrymap.domain.route.application;
 
 import com.untitled.cherrymap.domain.member.domain.Member;
 import com.untitled.cherrymap.domain.route.domain.Route;
+import com.untitled.cherrymap.domain.route.domain.RouteMode;
 import com.untitled.cherrymap.domain.route.dto.RouteCreateRequest;
 import com.untitled.cherrymap.etc.exception.BadDataAccessException;
 import com.untitled.cherrymap.etc.exception.BadRequestException;

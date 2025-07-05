@@ -1,6 +1,7 @@
 /*
 package com.untitled.cherrymap.domain.route.dto;
 
+import com.untitled.cherrymap.domain.route.domain.RouteMode;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -17,9 +18,8 @@ public class RouteCreateRequest {
     private String routeName;
 
     @NotNull(message = "모드(도보 or 대중교통)은 반드시 포함되어야 합니다.")
-    @Length(max = 10, message = "모드는 10자를 넘기지 마시오.")
     @Schema(description = "경로 유형: 도보 or 대중교통", example = "대중교통")
-    private String mode;
+    private RouteMode mode;
 
     @NotNull(message = "출발지명은 반드시 포함되어야 합니다.")
     @Length(max = 20, message = "출발지명은 20자를 넘기지 마시오.")
