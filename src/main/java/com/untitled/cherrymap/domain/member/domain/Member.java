@@ -32,15 +32,16 @@ public class Member {
     @Schema(description = "비밀번호(암호화 저장)", example = "$2a$10$...")
     private String password;
 
-    @Column(name = "role", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     @Schema(description = "역할(회원가입시 부여)", example = "ROLE_USER", allowableValues = {"ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR"})
-    private String role;
+    private UserRole role;
 
     @Column(name = "phone_number", length = 20)
     @Schema(description = "비상 연락처 번호", example = "010-1234-5678")
     private String phoneNumber;
 
-    public Member(String nickname, String password, String username, String phoneNumber, String role) {
+    public Member(String nickname, String password, String username, String phoneNumber, UserRole role) {
         this.nickname = nickname;
         this.username = username;
         this.password = password;

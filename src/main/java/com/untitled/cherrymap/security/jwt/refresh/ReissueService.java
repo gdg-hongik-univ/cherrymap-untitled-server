@@ -69,8 +69,8 @@ public class ReissueService {
         Long accessExp = jwtProperties.getAccessTokenExpirationMs();
         Long refreshExp = jwtProperties.getRefreshTokenExpirationMs();
 
-        String newAccess = jwtUtil.createJwt("access", member.getId().toString(), member.getRole(), accessExp);
-        String newRefresh = jwtUtil.createJwt("refresh", member.getId().toString(), member.getRole(), refreshExp);
+        String newAccess = jwtUtil.createJwt("access", member.getId().toString(), member.getRole().toString(), accessExp);
+        String newRefresh = jwtUtil.createJwt("refresh", member.getId().toString(), member.getRole().toString(), refreshExp);
 
         // 6. 기존 토큰 삭제 및 새 토큰 저장
         refreshRepository.deleteByRefresh(refresh);
