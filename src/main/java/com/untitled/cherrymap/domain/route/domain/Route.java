@@ -31,9 +31,10 @@ public class Route {
     @Schema(description = "경로명", example = "집에서 학교")
     private String routeName;
 
-    @Column(name = "mode", length = 10, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "mode", nullable = false)
     @Schema(description = "경로 모드", example = "도보", allowableValues = {"도보", "대중교통"})
-    private String mode;
+    private RouteMode mode;
 
     @Column(name = "end_name", length = 50, nullable = false)
     @Schema(description = "도착지 이름", example = "홍익대학교")

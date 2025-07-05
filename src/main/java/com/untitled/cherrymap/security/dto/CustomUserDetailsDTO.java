@@ -22,7 +22,7 @@ public class CustomUserDetailsDTO implements UserDetails {
         collection.add(new GrantedAuthority() {
             @Override
             public String getAuthority() {
-                return member.getRole();
+                return member.getRole().toString();
             }
         });
 
