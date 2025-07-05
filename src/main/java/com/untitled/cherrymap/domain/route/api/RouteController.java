@@ -1,3 +1,4 @@
+/*
 package com.untitled.cherrymap.domain.route.api;
 
 import com.untitled.cherrymap.domain.route.domain.Route;
@@ -56,3 +57,4 @@ public class RouteController {
         return ResponseEntity.noContent().build();
     }
 }
+*/

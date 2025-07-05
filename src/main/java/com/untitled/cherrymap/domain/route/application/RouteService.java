@@ -1,3 +1,4 @@
+/*
 package com.untitled.cherrymap.domain.route.application;
 
 import com.untitled.cherrymap.domain.member.domain.Member;
@@ -89,3 +90,4 @@ public class RouteService {
     }
 
 }
+*/
