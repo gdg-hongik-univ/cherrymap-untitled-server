@@ -1,3 +1,4 @@
+/*
 package com.untitled.cherrymap.domain.route.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,3 +47,4 @@ public class RouteCreateRequest {
     @Schema(description = "도착지 경도", example = "126.9706")
     private double endLng;
 }
+*/

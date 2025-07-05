@@ -1,3 +1,4 @@
+/*
 package com.untitled.cherrymap.domain.route.dao;
 
 import com.untitled.cherrymap.domain.member.domain.Member;
@@ -18,3 +19,4 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
                                  @Param("endLat") double endLat, @Param("endLng") double endLng);
 
 }
+*/
