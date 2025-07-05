@@ -59,7 +59,11 @@ public class SecurityConfig {
                 // 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능한 공개 경로
-                        .requestMatchers("/", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout").permitAll()
+                        .requestMatchers("/", "/index.html", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout").permitAll()
+                        // Swagger UI 관련 경로 허용
+                        .requestMatchers("/cherrymap-ui.html", "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
+                        // 정적 리소스 허용
+                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
                         // 관리자 권한이 필요한 경로
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // 그 외 모든 요청은 인증 필요
