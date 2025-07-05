@@ -1,6 +1,7 @@
 package com.untitled.cherrymap.security;
 
 import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.domain.UserRole;
 import com.untitled.cherrymap.domain.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
 import com.untitled.cherrymap.domain.member.dao.MemberRepository;
@@ -29,7 +30,7 @@ public class JoinService {
                 .password(bCryptPasswordEncoder.encode(password))
                 .username(username)
                 .phoneNumber(phoneNumber)
-                .role("ROLE_ADMIN")
+                .role(UserRole.ROLE_ADMIN)
                 .build();
 
         memberRepository.save(data);
