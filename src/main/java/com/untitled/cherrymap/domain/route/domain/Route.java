@@ -28,7 +28,7 @@ public class Route {
     @Schema(description = "유저 ID (FK)", example = "1")
     private Member member;
 
-    @Column(name = "route_name", length = 50, nullable = false)
+    @Column(name = "route_name", length = 50, nullable = true)
     @Schema(description = "경로명", example = "집에서 학교")
     private String routeName;
 
