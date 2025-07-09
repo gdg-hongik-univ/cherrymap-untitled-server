@@ -24,6 +24,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw MemberNotFoundException.EXCEPTION;
         }
 
+        System.out.println("✅ [로그인 사용자 역할] " + member.getNickname() + "의 역할: " + member.getRole());
+
         return new CustomUserDetailsDTO(member);
     }
 }

@@ -1,19 +1,15 @@
-/*
 package com.untitled.cherrymap.domain.route.application;
 
 import com.untitled.cherrymap.domain.member.domain.Member;
-import com.untitled.cherrymap.domain.route.domain.Route;
-import com.untitled.cherrymap.domain.route.domain.RouteMode;
-import com.untitled.cherrymap.domain.route.dto.RouteCreateRequest;
-import com.untitled.cherrymap.etc.exception.BadDataAccessException;
-import com.untitled.cherrymap.etc.exception.BadRequestException;
-import com.untitled.cherrymap.etc.message.ErrorMessage;
-import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import com.untitled.cherrymap.domain.route.dao.RouteRepository;
+import com.untitled.cherrymap.domain.route.domain.Route;
+import com.untitled.cherrymap.domain.route.dto.RouteResponse;
+import com.untitled.cherrymap.domain.route.dto.RouteSaveRequest;
+import com.untitled.cherrymap.domain.route.exception.DuplicateRouteException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,74 +17,76 @@ import java.util.List;
 public class RouteService {
 
     private final RouteRepository routeRepository;
-    private final MemberRepository memberRepository;
 
-    // 경로 생성
-    @Transactional
-    public Long createRoute(RouteCreateRequest request, Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
-
-        // 중복 경로 검사
-        boolean exists = routeRepository.existsByRouteDetails(
-                request.getMode(),
-                request.getStartLat(), request.getStartLng(),
-                request.getEndLat(), request.getEndLng()
-        );
-
-        if (exists) {
-            throw new BadRequestException(ErrorMessage.DUPLICATE_ROUTE);
+    // 경로 저장
+    public void saveRoute(Member member, RouteSaveRequest request) {
+        // 이미 동일한 endName 경로가 존재하면 저장 금지
+        if (routeRepository.existsByMemberAndEndName(member, request.getEndName())) {
+            throw DuplicateRouteException.EXCEPTION;
         }
 
-        Route route = Route.builder().member(member)
+        Route route = Route.builder()
+                .member(member)
                 .routeName(request.getRouteName())
                 .mode(request.getMode())
-                .startName(request.getStartName())
-                .startLat(request.getStartLat())
-                .startLng(request.getStartLng())
                 .endName(request.getEndName())
                 .endLat(request.getEndLat())
                 .endLng(request.getEndLng())
+                .createdAt(LocalDateTime.now())
                 .build();
+
         routeRepository.save(route);
-
-        return route.getId();
-    }
-    // 전체 경로 조회
-    @Transactional(readOnly = true)
-    public List<Route> getAllRoute(Long id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
-        return routeRepository.findAllByMember(member);
     }
 
-    // 특정 경로 조회
-    @Transactional(readOnly = true)
-    public Route getOneRoute(Long id, Long routeId) {
-        return validateMemberAndGetRoute(id, routeId);
+    // 사용자 전체 경로 조회
+    public List<RouteResponse> getRoutes(Member member) {
+        return routeRepository.findAllByMemberId(member.getId())
+                .stream()
+                .map(route -> new RouteResponse(
+                        route.getId(),
+                        (route.getRouteName() != null && !route.getRouteName().isBlank())
+                                ? route.getRouteName()
+                                : route.getEndName(),
+                        route.getMode()
+                ))
+                .toList();
+    }
+
+    // 특정 경로 상세 조회
+    public RouteResponse getRoute(Member member, Long routeId) {
+        Route route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new RuntimeException("해당 경로가 존재하지 않습니다."));
+        // 본인 소유 검증
+        validateOwnership(route, member);
+        return toResponse(route);
     }
 
     // 경로 삭제
-    @Transactional
-    public void deleteRoute(Long id, Long routeId) {
-        Route route = validateMemberAndGetRoute(id, routeId);
+    public void deleteRoute(Member member, Long routeId) {
+        Route route = routeRepository.findById(routeId)
+                .orElseThrow(() -> new RuntimeException("해당 경로가 존재하지 않습니다."));
+        // 본인 소유 검증
+        validateOwnership(route, member);
         routeRepository.delete(route);
     }
-    // 유저의 권한 확인 및 특정 경로 탐색
-    private Route validateMemberAndGetRoute(Long id, Long routeId) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.MEMBER_NOT_FOUND_WITH + id));
-        //System.out.println("조회된 Member: " + member);
 
-        Route route = routeRepository.findById(routeId)
-                .orElseThrow(() -> new BadRequestException(ErrorMessage.ROUTE_NOT_FOUND_WITH + routeId));
-        //System.out.println("조회된 Route: " + route);
+    // 경로 DTO 변환
+    private RouteResponse toResponse(Route route) {
+        String displayName = (route.getRouteName() != null && !route.getRouteName().isBlank())
+                ? route.getRouteName()
+                : route.getEndName();
 
-        if (!member.equals(route.getMember())) {
-            throw new BadDataAccessException(ErrorMessage.ACCESS_DENIED);
-        }
-        return route;
+        return new RouteResponse(
+                route.getId(),
+                displayName,
+                route.getMode()
+        );
     }
 
+    // 소유자 검증
+    private void validateOwnership(Route route, Member member) {
+        if (!route.getMember().getId().equals(member.getId())) {
+            throw new RuntimeException("해당 경로에 접근 권한이 없습니다.");
+        }
+    }
 }
-*/
