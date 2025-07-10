@@ -16,11 +16,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+
 
 
 /**
@@ -38,12 +37,15 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        String accessToken = request.getHeader("access");
+        String authHeader = request.getHeader("Authorization");
 
-        if (accessToken == null) {
+        // Authorization 헤더 없으면 바로 통과
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        String accessToken = authHeader.substring(7); // "Bearer " 이후 토큰 추출
 
         try {
             jwtUtil.isExpired(accessToken);
@@ -63,7 +65,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
 
-        // memberId 기반으로 사용자 조회
+        // 🔐 사용자 인증
         String memberId = jwtUtil.getMemberId(accessToken);
 
         Member member = memberRepository.findById(Long.parseLong(memberId))
@@ -80,4 +82,5 @@ public class JWTFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authToken);
         filterChain.doFilter(request, response);
     }
+
 }
