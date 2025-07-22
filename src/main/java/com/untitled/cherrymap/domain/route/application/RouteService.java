@@ -42,13 +42,7 @@ public class RouteService {
     public List<RouteResponse> getRoutes(Member member) {
         return routeRepository.findAllByMemberId(member.getId())
                 .stream()
-                .map(route -> new RouteResponse(
-                        route.getId(),
-                        (route.getRouteName() != null && !route.getRouteName().isBlank())
-                                ? route.getRouteName()
-                                : route.getEndName(),
-                        route.getMode()
-                ))
+                .map(this::toResponse)
                 .toList();
     }
 
@@ -76,12 +70,16 @@ public class RouteService {
                 ? route.getRouteName()
                 : route.getEndName();
 
-        return new RouteResponse(
-                route.getId(),
-                displayName,
-                route.getMode()
-        );
+        return RouteResponse.builder()
+                .routeId(route.getId())
+                .routeName(displayName)
+                .mode(route.getMode())
+                .endName(route.getEndName())
+                .endLat(route.getEndLat())
+                .endLng(route.getEndLng())
+                .build();
     }
+
 
     // 소유자 검증
     private void validateOwnership(Route route, Member member) {
