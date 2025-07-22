@@ -10,5 +10,8 @@ COPY build/libs/*-SNAPSHOT.jar app.jar
 # 4. Spring 배포 프로파일 환경변수 설정
 ENV SPRING_PROFILES_ACTIVE=prod
 
-# 5. JAR 실행 명령
+# 5. 포트 노출
+EXPOSE 8080
+
+# 6. JAR 실행 명령
 CMD ["java", "-jar", "app.jar"]
