@@ -70,6 +70,7 @@ public class SecurityConfig {
                         .requestMatchers("/cherrymap-ui.html", "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // 정적 리소스 허용
                         .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**").permitAll()
+                        .requestMatchers("/dev/**").permitAll()
                         // 관리자 권한이 필요한 경로
                         .requestMatchers("/admin").hasRole("ADMIN")
                         // 그 외 모든 요청은 인증 필요
