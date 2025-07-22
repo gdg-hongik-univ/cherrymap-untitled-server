@@ -75,7 +75,7 @@ jobs:
             docker pull ${{ secrets.DOCKER_USERNAME }}/spring-cherrymap:latest
             docker stop spring-cherrymap-container || true
             docker rm spring-cherrymap-container || true
-            docker run -d -p 80:8080 -e JWT_SECRET=${{ secrets.JWT_SECRET }} --name spring-cherrymap-container ${{ secrets.DOCKER_USERNAME }}/spring-cherrymap:latest
+            docker run -d -p 8080:8080 -e JWT_SECRET=${{ secrets.JWT_SECRET }} --name spring-cherrymap-container ${{ secrets.DOCKER_USERNAME }}/spring-cherrymap:latest
 
       # SSH 허용 규칙 해제
       - name: Revoke SSH rule
