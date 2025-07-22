@@ -91,7 +91,9 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
                 "http://localhost:5177",
-                "https://cherrymap.pages.dev"
+                "http://localhost:5173",
+                "https://cherrymap.pages.dev",
+                "https://cherrymap.click"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
