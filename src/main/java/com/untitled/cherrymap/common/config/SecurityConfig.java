@@ -92,6 +92,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://localhost:5177",
                 "http://localhost:5173",
+                "http://localhost:5178",
+                "http://localhost:5179",
                 "https://cherrymap.pages.dev",
                 "https://cherrymap.click"
         ));
