@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -28,6 +29,9 @@ public class OpenApiConfig {
 
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("Authorization");
+
+        Server server = new Server();
+        server.setUrl("https://3.34.123.246");
 
         return new OpenAPI()
                 .info(info)
