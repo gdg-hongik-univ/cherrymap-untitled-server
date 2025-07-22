@@ -32,6 +32,9 @@ public class OpenApiConfig {
         SecurityRequirement securityRequirement = new SecurityRequirement()
                 .addList("Authorization");
 
+        Server server = new Server();
+        server.setUrl("https://3.34.123.246");
+
         return new OpenAPI()
                 .info(info)
                 .servers(List.of(

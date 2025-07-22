@@ -90,8 +90,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
+                "http://localhost:5177",
                 "http://localhost:5173",
-                "http://localhost:3000",
                 "https://cherrymap.pages.dev",
                 "https://cherrymap.click"
         ));
