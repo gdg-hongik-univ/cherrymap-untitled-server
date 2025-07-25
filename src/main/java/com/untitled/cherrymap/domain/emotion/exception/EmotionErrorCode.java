@@ -1,4 +1,4 @@
-package com.untitled.cherrymap.domain.route.exception;
+package com.untitled.cherrymap.domain.emotion.exception;
 
 import com.untitled.cherrymap.common.dto.ErrorReason;
 import com.untitled.cherrymap.common.exception.BaseErrorCode;
@@ -9,9 +9,9 @@ import static com.untitled.cherrymap.common.consts.CherrymapStatic.*;
 
 @Getter
 @AllArgsConstructor
-public enum RouteErrorCode implements BaseErrorCode {
-    ROUTE_ERROR_CODE(NOT_FOUND, "Route_404", "해당 경로를 찾을 수 없습니다."),
-    DUPLICATE_ROUTE(CONFLICT, "Route_409", "이미 존재하는 경로입니다.");
+public enum EmotionErrorCode implements BaseErrorCode {
+
+    EMOTION_ERROR_CODE(NOT_FOUND, "Emotion_404", "해당 감정 기록을 찾을 수 없습니다.");
 
     private final Integer status;
     private final String code;

@@ -4,7 +4,6 @@ import com.untitled.cherrymap.domain.member.domain.Member;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.*;
-import com.untitled.cherrymap.domain.route.domain.RouteMode;
 import java.time.LocalDateTime;
 
 @Entity
