@@ -6,6 +6,6 @@ public class EmotionNotFoundException extends CherrymapCodeException {
     public static final CherrymapCodeException EXCEPTION = new EmotionNotFoundException();
 
     private EmotionNotFoundException() {
-        super(MemberErrorCode.MEMBER_NOT_FOUND);
+        super(EmotionErrorCode.EMOTION_ERROR_CODE);
     }
 }
