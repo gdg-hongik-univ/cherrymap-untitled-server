@@ -4,6 +4,7 @@ import com.untitled.cherrymap.domain.member.dao.MemberRepository;
 import com.untitled.cherrymap.domain.member.domain.Member;
 import com.untitled.cherrymap.domain.member.dto.PhoneNumberResponse;
 import com.untitled.cherrymap.domain.member.exception.InvalidPhoneNumberException;
+import com.untitled.cherrymap.domain.member.exception.MemberNotFoundException;
 import com.untitled.cherrymap.domain.member.exception.PhoneNumberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,32 +16,39 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
 
-
-
     @Transactional(readOnly = true)
     public PhoneNumberResponse getPhoneNumber(Member member) {
-        if (member.getPhoneNumber() == null || member.getPhoneNumber().isBlank()) {
+        Member persistentMember = getPersistentMember(member);
+
+        if (persistentMember.getPhoneNumber() == null || persistentMember.getPhoneNumber().isBlank()) {
             throw PhoneNumberNotFoundException.EXCEPTION;
         }
-        
-        return toPhoneNumberResponse(member);
+
+        return toPhoneNumberResponse(persistentMember);
     }
 
     @Transactional
     public void updatePhoneNumber(Member member, String phoneNumber) {
-        // 전화번호 형식 검증
         validatePhoneNumberFormat(phoneNumber);
-        
-        member.setPhoneNumber(phoneNumber);
+
+        Member persistentMember = getPersistentMember(member);
+        persistentMember.setPhoneNumber(phoneNumber);
     }
 
     @Transactional
     public void deletePhoneNumber(Member member) {
-        if (member.getPhoneNumber() == null || member.getPhoneNumber().isBlank()) {
+        Member persistentMember = getPersistentMember(member);
+
+        if (persistentMember.getPhoneNumber() == null || persistentMember.getPhoneNumber().isBlank()) {
             throw PhoneNumberNotFoundException.EXCEPTION;
         }
-        
-        member.setPhoneNumber(null);
+
+        persistentMember.setPhoneNumber(null);
+    }
+    // 영속 Member 조회
+    private Member getPersistentMember(Member member) {
+        return memberRepository.findById(member.getId())
+                .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
     }
 
     // 전화번호 형식 검증
@@ -54,6 +62,7 @@ public class MemberService {
             throw InvalidPhoneNumberException.EXCEPTION;
         }
     }
+
 
     // 전화번호 타입 판별
     private String getPhoneType(String phoneNumber) {
