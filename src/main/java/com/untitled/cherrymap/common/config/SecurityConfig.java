@@ -65,7 +65,7 @@ public class SecurityConfig {
                 // 경로별 인가 설정
                 .authorizeHttpRequests(auth -> auth
                         // 누구나 접근 가능한 공개 경로
-                        .requestMatchers("/", "/index.html", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout", "/api/emotions").permitAll()
+                        .requestMatchers("/", "/index.html", "/api/login", "/api/join","/api/check-nickname", "/api/reissue","/api/logout", "/api/emotions", "/api/v1/chat").permitAll()
                         // Swagger UI 관련 경로 허용
                         .requestMatchers("/cherrymap-ui.html", "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         // 정적 리소스 허용
