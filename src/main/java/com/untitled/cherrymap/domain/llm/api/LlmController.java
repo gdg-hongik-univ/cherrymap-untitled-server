@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1")
 @RequiredArgsConstructor
-@Slf4j
 @Tag(name = "LLM Chat", description = "LLM 챗봇 API")
 public class LlmController {
 
@@ -44,10 +42,7 @@ public class LlmController {
     public ResponseEntity<LlmChatResponse> chat(
             @Parameter(hidden = true) @AuthenticationPrincipal CustomUserDetailsDTO user,
             @RequestBody LlmChatRequest request
-    ) {    
-        Long memberId = user.getMember().getId();
-        log.info("사용자 {} (ID: {}) 챗봇 요청: {}", user.getNickname(), memberId, request.message().substring(0, Math.min(50, request.message().length())));
-        
-        return ResponseEntity.ok(llmService.processChatRequest(request, memberId));
+    ) {
+        return ResponseEntity.ok(llmService.processChatRequest(request, user.getMember().getId()));
     }
 } 
