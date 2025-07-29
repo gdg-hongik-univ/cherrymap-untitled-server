@@ -3,6 +3,9 @@ package com.untitled.cherrymap.domain.llm.application;
 import com.untitled.cherrymap.domain.llm.dto.LlmChatRequest;
 import com.untitled.cherrymap.domain.llm.dto.LlmChatResponse;
 import com.untitled.cherrymap.domain.llm.exception.LlmCommunicationException;
+import com.untitled.cherrymap.domain.member.dao.MemberRepository;
+import com.untitled.cherrymap.domain.member.domain.Member;
+import com.untitled.cherrymap.domain.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,12 +21,17 @@ import reactor.core.publisher.Mono;
 public class LlmService {
 
     private final WebClient webClient;
+    private final MemberRepository memberRepository;
     
     @Value("${llm.server.url:http://ai.cherrymap.click}")
     private String llmServerUrl;
 
-    public LlmChatResponse processChatRequest(LlmChatRequest request) {
-        log.info("LLM 챗봇 요청 처리 시작. 메시지: {}", request.message().substring(0, Math.min(50, request.message().length())));
+    public LlmChatResponse processChatRequest(LlmChatRequest request, Long memberId) {        
+        // EmotionService와 동일한 방식으로 memberId 검증
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> MemberNotFoundException.EXCEPTION);
+        
+        log.info("사용자 {} (ID: {}) LLM 챗봇 요청 처리 시작", member.getNickname(), memberId);
         
         try {
             return webClient.post()
@@ -32,8 +40,8 @@ public class LlmService {
                     .bodyValue(request)
                     .retrieve()
                     .bodyToMono(LlmChatResponse.class)
-                    .doOnSuccess(response -> log.info("LLM 챗봇 응답 수신. 액션: {}", response.actionType()))
-                    .doOnError(error -> log.error("LLM 서버 통신 오류: {}", error.getMessage()))
+                    .doOnSuccess(response -> log.info("사용자 {} (ID: {}) LLM 챗봇 응답 수신. 액션: {}", member.getNickname(), memberId, response.actionType()))
+                    .doOnError(error -> log.error("사용자 {} (ID: {}) LLM 서버 통신 오류: {}", member.getNickname(), memberId, error.getMessage()))
                     .block();
                     
         } catch (WebClientResponseException e) {
