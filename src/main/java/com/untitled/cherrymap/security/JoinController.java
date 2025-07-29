@@ -4,6 +4,7 @@ import com.untitled.cherrymap.common.dto.SuccessResponse;
 import com.untitled.cherrymap.domain.member.exception.DuplicateNicknameException;
 import com.untitled.cherrymap.security.dto.JoinDTO;
 import com.untitled.cherrymap.domain.member.dao.MemberRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -25,7 +26,7 @@ public class JoinController {
     private final MemberRepository memberRepository;
 
     @PostMapping("/join")
-    public ResponseEntity<SuccessResponse> joinProcess(@RequestBody JoinDTO joinDTO) {
+    public ResponseEntity<SuccessResponse> joinProcess(@RequestBody @Valid JoinDTO joinDTO) {
         joinService.joinProcess(joinDTO);
         return ResponseEntity.ok(
                 SuccessResponse.success(201, Map.of("nickname", joinDTO.getNickname(), "message", "회원가입 완료"))
